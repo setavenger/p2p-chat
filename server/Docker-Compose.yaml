@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - my-network
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: .znb6PF_yHWzCtbF6sYfNC_3CB!yoq
+      POSTGRES_DB: p2p
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - my-network
+
+networks:
+  my-network:
+
+volumes:
+  db-data:
