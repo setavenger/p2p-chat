@@ -17,6 +17,7 @@ type Message struct {
 	Signature      string `json:"signature"`
 	Timestamp      uint64 `json:"timestamp"`
 	Read           bool   `json:"read,omitempty"`
+	ParentID       string `json:"parent_id"`
 }
 
 type MessageServer struct {
@@ -28,9 +29,10 @@ type MessageServer struct {
 	Signature      string         `gorm:"column:signature" json:"signature,omitempty"`
 	Timestamp      uint64         `gorm:"column:timestamp;index" json:"timestamp,omitempty"`
 	Read           bool           `gorm:"column:read;index" json:"read,omitempty"`
-	CreatedAt      time.Time      `json:"createdAt"`
-	UpdatedAt      time.Time      `json:"updatedAt"`
-	DeletedAt      gorm.DeletedAt `gorm:"index" json:"deletedAt"`
+	ParentID       string         `gorm:"column:parent_id;index" json:"parent_id,omitempty"`
+	CreatedAt      time.Time      `json:"created_at,omitempty"`
+	UpdatedAt      time.Time      `json:"updated_at,omitempty"`
+	DeletedAt      gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
 type MessagePlain struct {
@@ -41,6 +43,7 @@ type MessagePlain struct {
 	Recipient      string `json:"recipient"`
 	Timestamp      uint64 `json:"timestamp"`
 	Read           bool   `json:"read"`
+	ParentID       string `json:"parent_id"`
 }
 
 func (m *Message) GetId() error {
