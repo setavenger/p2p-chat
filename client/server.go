@@ -126,7 +126,7 @@ func runServer() {
 	router.GET("/messages", daemon.GetMessages)
 	router.GET("/messages/unread", daemon.GetUnreadMessages)
 
-	if err := router.Run("127.0.0.1:8088"); err != nil {
+	if err := router.Run(":8088"); err != nil {
 		log.Fatal(err)
 	}
 }

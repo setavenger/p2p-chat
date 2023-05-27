@@ -1,13 +1,20 @@
 version: "3.9"
 services:
-  api:
+  backend:
     build: ./client
     restart: unless-stopped
     ports:
       - "127.0.0.1:8088:8088"
+    networks:
+      - frontend-network
 
   frontend:
     build: ./chat-frontend
     restart: unless-stopped
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:3000:80"
+    networks:
+      - frontend-network
+
+networks:
+  frontend-network:

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/setavenger/p2p-chat/common"
 	"testing"
 )
 
@@ -16,13 +17,13 @@ const examplePublicKey3 = "d623bd7bae8a256c35ba9db430795c501532b75a4dc8aa4e1ef36
 
 // TestSendMessage - requires that server is running on Port 8000 locally
 func TestSendMessage(t *testing.T) {
-	privateKey, publicKey, err := GenerateKeyPair()
+	privateKey, publicKey, err := common.GenerateKeyPair()
 	if err != nil {
 		t.Errorf("Error generating key pair: %s", err.Error())
 		return
 	}
 
-	_, recipientPublicKey, err := GenerateKeyPair()
+	_, recipientPublicKey, err := common.GenerateKeyPair()
 	if err != nil {
 		t.Errorf("Error generating key pair: %s", err.Error())
 		return
@@ -44,7 +45,7 @@ func TestSendMessage(t *testing.T) {
 
 // TestSendMessageByUsername - requires that server is running on Port 8000 locally
 func TestSendMessageByUsername(t *testing.T) {
-	privateKey, publicKey, err := GenerateKeyPair()
+	privateKey, publicKey, err := common.GenerateKeyPair()
 	if err != nil {
 		t.Errorf("Error generating key pair: %s", err.Error())
 		return
@@ -101,18 +102,18 @@ func TestSendAndRetrieve(t *testing.T) {
 // TestSendMessage - requires that server is running on Port 8000 locally
 func TestSendAndRetrieve2(t *testing.T) {
 
-	sender1PrivateKey, sender1PublicKey, err := GenerateKeyPair()
+	sender1PrivateKey, sender1PublicKey, err := common.GenerateKeyPair()
 	if err != nil {
 		t.Errorf("Error generating key pair: %s", err.Error())
 		return
 	}
-	sender2PrivateKey, sender2PublicKey, err := GenerateKeyPair()
+	sender2PrivateKey, sender2PublicKey, err := common.GenerateKeyPair()
 	if err != nil {
 		t.Errorf("Error generating key pair: %s", err.Error())
 		return
 	}
 
-	recipientPrivateKey, recipientPublicKey, err := GenerateKeyPair()
+	recipientPrivateKey, recipientPublicKey, err := common.GenerateKeyPair()
 	if err != nil {
 		t.Errorf("Error generating key pair: %s", err.Error())
 		return

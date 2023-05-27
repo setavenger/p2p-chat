@@ -3,6 +3,7 @@ import axios from 'axios'
 import ComposeModal from "./composeModal";
 import SetKeyModal from "./setKeyModal";
 import SetHostModal from "./setHostModal";
+import {baseUrl} from "../constants";
 
 // Email Detail Component
 const EmailDetail = ({email}) => {
