@@ -106,6 +106,18 @@ const EmailInterface = () => {
             })
             .catch(error => console.error('Error sending email:', error))
     }
+    const handleSendReply = ({recipient, body}) => {
+        if (selectedEmail === null) {
+            console.log("No message was selected")
+            return
+        }
+        axios.post(baseUrl + '/send', {"recipient": recipient, "body": body, "parent_id":selectedEmail.id})
+            .then(response => {
+                console.log('Email sent successfully:', response)
+                handleCloseComposeModal()
+            })
+            .catch(error => console.error('Error sending email:', error))
+    }
 
     const handleSetKey = ({key}) => {
         axios.post(baseUrl + '/set-key', {"key": key})
@@ -137,6 +149,9 @@ const EmailInterface = () => {
                     <div className="p-4 flex justify-between ">
                         <button className="bg-blue-500 text-white rounded px-4 py-2" onClick={handleRefresh}>
                             Refresh
+                        </button>
+                        <button className="bg-gray-500 text-white rounded px-4 py-2" onClick={handleRefresh}>
+                            Reply
                         </button>
                         <button className="bg-green-500 text-white rounded px-4 py-2" onClick={handleCompose}>
                             Compose

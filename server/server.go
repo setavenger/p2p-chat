@@ -8,13 +8,16 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 )
 
 type Daemon struct {
 	DBPath string
 	DB     *gorm.DB
 	Users  map[string]*common.UserWellKnown
+	Domain string
 }
 
 func (d *Daemon) GetUserPubKey(username string) *common.UserWellKnown {
@@ -92,11 +95,18 @@ func (d *Daemon) ForwardMessage(c *gin.Context) {
 		return
 	}
 
+	// todo find local username if existent
+	userData, err := GetUsernameByPubKey(d.DB, message.Sender)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		message.SenderUsername = fmt.Sprintf("%s@%s", userData.Username, parseRawDomain(d.Domain))
+	}
 	// Forward the message to the designated server here
 	// todo
 	//
 
-	err := SaveEntry(d.DB, &message)
+	err = SaveEntry(d.DB, &message)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -105,6 +115,12 @@ func (d *Daemon) ForwardMessage(c *gin.Context) {
 
 	log.Printf("Forwarding message: %+v", message)
 	c.Status(http.StatusOK)
+}
+
+//todo move this
+func parseRawDomain(domainRaw string) string {
+	s := strings.ReplaceAll(domainRaw, "https://", "")
+	return strings.ReplaceAll(s, "http://", "")
 }
 
 // MarkMessageAsRead - Endpoint to mark a message as read
@@ -183,7 +199,7 @@ func runServer() {
 		fmt.Println(err)
 		return
 	}
-	daemon := Daemon{DBPath: dbPath, DB: db}
+	daemon := Daemon{DBPath: dbPath, DB: db, Domain: os.Getenv("DOMAIN")}
 	//err = daemon.LoadUsers("./data/users.json")
 	//if err != nil {
 	//	fmt.Println(err)

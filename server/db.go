@@ -161,3 +161,14 @@ func retrieveUsersWellKnown(db *gorm.DB, username string) (*common.UserWellKnown
 
 	return &user, nil
 }
+
+func GetUsernameByPubKey(db *gorm.DB, publicKey string) (*common.UserWellKnown, error) {
+	var user common.UserWellKnown
+
+	result := db.Where("public_key = ?", publicKey).Find(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &user, nil
+}
