@@ -10,7 +10,6 @@ import (
 )
 
 type Daemon struct {
-	DBPath string
 	DB     *gorm.DB
 	Client Client
 }
@@ -102,11 +101,9 @@ func (d *Daemon) SendMessage(c *gin.Context) {
 }
 
 func runServer() {
-	dbPath := "./data/data.db"
 
-	daemon := Daemon{DBPath: dbPath, Client: Client{
-		BaseURL: "https://p2p.snblago.com",
-		//BaseURL: "http://localhost:8889",
+	daemon := Daemon{Client: Client{
+		BaseURL: "http://localhost:8889",
 		//PrivateKey: "b5ecbb76d605b0d9025bf7cdd830bf9c01a0a1967d89462aa4016d7fe897f63e",
 	}}
 	//daemon.Client.SetPublicKey()

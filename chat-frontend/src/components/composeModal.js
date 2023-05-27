@@ -26,6 +26,7 @@ const ComposeModal = ({ isOpen, onClose, onSend }) => {
                         className="border rounded w-full py-2 px-4"
                         type="text"
                         value={recipient}
+                        placeholder={"user@domain.com"}
                         onChange={e => setRecipient(e.target.value)}
                     />
                 </label>
@@ -34,6 +35,7 @@ const ComposeModal = ({ isOpen, onClose, onSend }) => {
                     <textarea
                         className="border rounded w-full py-2 px-4"
                         value={body}
+                        placeholder={"GM Fren..."}
                         onChange={e => setBody(e.target.value)}
                     />
                 </label>

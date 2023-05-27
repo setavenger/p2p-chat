@@ -5,6 +5,7 @@ import SetKeyModal from "./setKeyModal";
 import SetHostModal from "./setHostModal";
 import {baseUrl} from "../constants";
 
+
 // Email Detail Component
 const EmailDetail = ({email}) => {
     if (!email) {
