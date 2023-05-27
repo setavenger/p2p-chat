@@ -5,10 +5,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/setavenger/p2p-chat/common"
 	"log"
 	"net/http"
 	"net/url"
-	"p2p-chat/common"
 	"time"
 )
 

@@ -1,0 +1,12 @@
+[
+  {
+    "username": "me",
+    "public_key": "0fbbead7194be93d6fc659dd0fe9bdf8b459febfbbfa602322d081eef19688c2",
+    "meta": "Just some more information"
+  },
+  {
+    "username": "you",
+    "public_key": "0f8abf593879bca06435993639130ea2caf017196b3379dc208e003b9b411e48",
+    "meta": "The alternative account"
+  }
+]

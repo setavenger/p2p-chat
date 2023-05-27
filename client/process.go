@@ -12,10 +12,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2/schnorr"
+	"github.com/setavenger/p2p-chat/common"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"p2p-chat/common"
 	"time"
 
 	"github.com/btcsuite/btcd/btcec/v2"

@@ -43,9 +43,9 @@ func CreateDB(path string) (db *gorm.DB, err error) {
 }
 
 func Migrate(dbPath string) error {
-	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+	db, err := ConnectToPostgres()
 	if err != nil {
-		// Handle the error
+		log.Fatal(err)
 	}
 	err = db.AutoMigrate(&common.MessageServer{})
 	if err != nil {

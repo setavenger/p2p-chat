@@ -24,6 +24,23 @@ type NewPrivateKeyBody struct {
 	Key string `json:"key,omitempty"`
 }
 
+type NewHostBody struct {
+	Host string `json:"host,omitempty"`
+}
+
+func (d *Daemon) SetHost(c *gin.Context) {
+	var data NewHostBody
+	err := c.ShouldBindJSON(&data)
+	if err != nil {
+		fmt.Printf("Error parsing: %s\n", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	d.Client.BaseURL = data.Host
+	c.Status(http.StatusOK)
+}
+
 func (d *Daemon) SetPrivateKey(c *gin.Context) {
 	var data NewPrivateKeyBody
 	err := c.ShouldBindJSON(&data)
@@ -36,6 +53,7 @@ func (d *Daemon) SetPrivateKey(c *gin.Context) {
 	d.Client.SetPrivateKey(data.Key)
 	c.Status(http.StatusOK)
 }
+
 func (d *Daemon) GetMessages(c *gin.Context) {
 	messagesRaw, err := d.Client.GetAllMessages()
 	if err != nil {
@@ -87,10 +105,10 @@ func runServer() {
 	dbPath := "./data/data.db"
 
 	daemon := Daemon{DBPath: dbPath, Client: Client{
-		BaseURL:    "http://localhost:8000",
-		PrivateKey: "b5ecbb76d605b0d9025bf7cdd830bf9c01a0a1967d89462aa4016d7fe897f63e",
+		BaseURL: "http://localhost:8000",
+		//PrivateKey: "b5ecbb76d605b0d9025bf7cdd830bf9c01a0a1967d89462aa4016d7fe897f63e",
 	}}
-	daemon.Client.SetPublicKey()
+	//daemon.Client.SetPublicKey()
 
 	router := gin.Default()
 	config := cors.DefaultConfig()
@@ -102,6 +120,7 @@ func runServer() {
 	// "public" to local machine
 	router.POST("/send", daemon.SendMessage)
 	router.POST("/set-key", daemon.SetPrivateKey)
+	router.POST("/set-host", daemon.SetHost)
 
 	router.GET("/messages", daemon.GetMessages)
 	router.GET("/messages/unread", daemon.GetUnreadMessages)

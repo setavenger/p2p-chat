@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/setavenger/p2p-chat/common"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
-	"p2p-chat/common"
 	"strconv"
 )
 
@@ -184,11 +184,11 @@ func runServer() {
 		return
 	}
 	daemon := Daemon{DBPath: dbPath, DB: db}
-	err = daemon.LoadUsers("./data/users.json")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	//err = daemon.LoadUsers("./data/users.json")
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
 	router := gin.Default()
 
 	// well-known

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"p2p-chat/common"
+	"github.com/setavenger/p2p-chat/common"
 )
 
 func SendMessage(client Client, privateKey, publicKey, recipientPublicKey, plainMessage string) error {
