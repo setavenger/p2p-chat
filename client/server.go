@@ -105,7 +105,8 @@ func runServer() {
 	dbPath := "./data/data.db"
 
 	daemon := Daemon{DBPath: dbPath, Client: Client{
-		BaseURL: "http://localhost:8000",
+		BaseURL: "https://p2p.snblago.com",
+		//BaseURL: "http://localhost:8889",
 		//PrivateKey: "b5ecbb76d605b0d9025bf7cdd830bf9c01a0a1967d89462aa4016d7fe897f63e",
 	}}
 	//daemon.Client.SetPublicKey()
@@ -125,7 +126,7 @@ func runServer() {
 	router.GET("/messages", daemon.GetMessages)
 	router.GET("/messages/unread", daemon.GetUnreadMessages)
 
-	if err := router.Run("127.0.0.1:8080"); err != nil {
+	if err := router.Run("127.0.0.1:8088"); err != nil {
 		log.Fatal(err)
 	}
 }

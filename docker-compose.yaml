@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  api:
+    build: ./client
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8088:8088"
+
+  frontend:
+    build: ./chat-frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"

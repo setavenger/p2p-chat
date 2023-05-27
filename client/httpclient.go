@@ -24,7 +24,7 @@ func (c *Client) SetPrivateKey(key string) {
 	c.SetPublicKey()
 }
 func (c *Client) SetPublicKey() {
-	publicKey, err := GetPublicKey(c.PrivateKey)
+	publicKey, err := common.GetPublicKey(c.PrivateKey)
 	if err != nil {
 		fmt.Println(err)
 		return

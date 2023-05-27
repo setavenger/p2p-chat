@@ -64,20 +64,20 @@ func TestSendMessageByUsername(t *testing.T) {
 func TestSendAndRetrieve(t *testing.T) {
 
 	myMessage1 := "I love it so much."
-	err := SendMessage(Client{BaseURL: "http://localhost:8000"}, examplePrivateKey1, examplePublicKey1, examplePublicKey2, myMessage1)
+	err := SendMessage(Client{BaseURL: "https://p2p.snblago.com"}, examplePrivateKey1, examplePublicKey1, examplePublicKey2, myMessage1)
 	if err != nil {
 		t.Errorf("Error sending message: %s", err.Error())
 		return
 	}
 	myMessage2 := "This should be working. Moreover this message is going to be way longer than the other message. Let's see how big the difference is."
-	err = SendMessage(Client{BaseURL: "http://localhost:8000"}, examplePrivateKey3, examplePublicKey3, examplePublicKey2, myMessage2)
+	err = SendMessage(Client{BaseURL: "https://p2p.snblago.com"}, examplePrivateKey3, examplePublicKey3, examplePublicKey2, myMessage2)
 	if err != nil {
 		t.Errorf("Error sending message: %s", err.Error())
 		return
 	}
 
 	retrieveClient := Client{
-		BaseURL:    "http://localhost:8000",
+		BaseURL:    "https://p2p.snblago.com",
 		PrivateKey: examplePrivateKey2,
 		PublicKey:  examplePublicKey2,
 	}

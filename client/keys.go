@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/base64"
-	"log"
 	"strings"
 
 	"crypto/aes"
@@ -12,13 +11,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
-	"github.com/btcsuite/btcd/btcec/v2/schnorr"
 	"io"
 	"math/big"
 	mrand "math/rand"
-
-	"github.com/tyler-smith/go-bip32"
-	"github.com/tyler-smith/go-bip39"
 )
 
 func GeneratePrivateKey() string {
@@ -37,16 +32,6 @@ func GeneratePrivateKey() string {
 	k.Add(k, one)
 
 	return hex.EncodeToString(k.Bytes())
-}
-
-func GetPublicKey(sk string) (string, error) {
-	b, err := hex.DecodeString(sk)
-	if err != nil {
-		return "", err
-	}
-
-	_, pk := btcec.PrivKeyFromBytes(b)
-	return hex.EncodeToString(schnorr.SerializePubKey(pk)), nil
 }
 
 // ComputeSharedSecret - ECDH
@@ -142,80 +127,4 @@ func Decrypt(content string, key []byte) (string, error) {
 	message := string(plaintext[0 : len(plaintext)-padding])
 
 	return message, nil
-}
-
-func GenerateSeedWords() (string, error) {
-	entropy, err := bip39.NewEntropy(256)
-	if err != nil {
-		return "", err
-	}
-
-	words, err := bip39.NewMnemonic(entropy)
-	if err != nil {
-		return "", err
-	}
-
-	return words, nil
-}
-
-func SeedFromWords(words string) []byte {
-	return bip39.NewSeed(words, "")
-}
-
-func PrivateKeyFromSeed(seed []byte) (string, error) {
-	key, err := bip32.NewMasterKey(seed)
-	if err != nil {
-		return "", err
-	}
-
-	derivationPath := []uint32{
-		bip32.FirstHardenedChild + 44,
-		bip32.FirstHardenedChild + 1237,
-		bip32.FirstHardenedChild + 0,
-		0,
-		0,
-	}
-
-	next := key
-	for _, idx := range derivationPath {
-		var err error
-		next, err = next.NewChildKey(idx)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return hex.EncodeToString(next.Key), nil
-}
-
-func ValidateWords(words string) bool {
-	return bip39.IsMnemonicValid(words)
-}
-
-func KeyGen() string {
-	seedWords, err := GenerateSeedWords()
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-
-	seed := SeedFromWords(seedWords)
-
-	sk, err := PrivateKeyFromSeed(seed)
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-
-	return sk
-}
-
-func GetPubKey(privateKey string) string {
-	if keyb, err := hex.DecodeString(privateKey); err != nil {
-		log.Printf("Error decoding key from hex: %s\n", err.Error())
-		return ""
-	} else {
-		_, pubkey := btcec.PrivKeyFromBytes(keyb)
-		return hex.EncodeToString(schnorr.SerializePubKey(pubkey))
-	}
 }

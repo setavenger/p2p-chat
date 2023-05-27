@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import axios from 'axios'
 import ComposeModal from "./composeModal";
 import SetKeyModal from "./setKeyModal";
+import SetHostModal from "./setHostModal";
 
 // Email Detail Component
 const EmailDetail = ({email}) => {
@@ -11,7 +12,6 @@ const EmailDetail = ({email}) => {
 
     return (
         <>
-            {/*<h2 className="text-lg font-bold mb-2">{email.subject}</h2>*/}
             <div className="text-sm text-gray-500 mb-4">From: {email.sender}</div>
             <p>{email.content}</p>
         </>
@@ -52,10 +52,11 @@ const EmailInterface = () => {
     const [messages, setMessages] = useState([])
     const [composeModalOpen, setComposeModalOpen] = useState(false)
     const [keyModalOpen, setKeyModalOpen] = useState(false)
+    const [hostModalOpen, setHostModalOpen] = useState(false)
 
 
     useEffect(() => {
-        axios.get('http://localhost:8080/messages')
+        axios.get(baseUrl + '/messages')
             .then(response => {
                 console.log(response.data)
                 setMessages(response.data)
@@ -66,7 +67,7 @@ const EmailInterface = () => {
     // Simulate refresh function
     const handleRefresh = () => {
         console.log('Refreshing emails...')
-        axios.get('http://localhost:8080/messages')
+        axios.get(baseUrl + '/messages')
             .then(response => setMessages(response.data))
             .catch(error => console.error('Error fetching emails:', error))
     }
@@ -87,8 +88,16 @@ const EmailInterface = () => {
         setKeyModalOpen(false)
     }
 
+    const handleHostModal = () => {
+        setHostModalOpen(true)
+    }
+
+    const handleCloseHostModal = () => {
+        setHostModalOpen(false)
+    }
+
     const handleSendMessage = ({recipient, body}) => {
-        axios.post('http://localhost:8080/send', {"recipient": recipient, "body": body})
+        axios.post(baseUrl + '/send', {"recipient": recipient, "body": body})
             .then(response => {
                 console.log('Email sent successfully:', response)
                 handleCloseComposeModal()
@@ -97,13 +106,23 @@ const EmailInterface = () => {
     }
 
     const handleSetKey = ({key}) => {
-        axios.post('http://localhost:8080/set-key', {"key": key})
+        axios.post(baseUrl + '/set-key', {"key": key})
             .then(response => {
                 console.log('key set successfully:', response)
                 handleCloseKeyModal()
                 handleRefresh()
             })
             .catch(error => console.error('Error setting key:', error))
+    }
+
+    const handleSetHost = ({host}) => {
+        axios.post(baseUrl + '/set-host', {"host": host})
+            .then(response => {
+                console.log('host set successfully:', response)
+                handleCloseHostModal()
+                handleRefresh()
+            })
+            .catch(error => console.error('Error setting host:', error))
     }
 
     return (
@@ -123,6 +142,9 @@ const EmailInterface = () => {
                         <button className="bg-red-500 text-white rounded px-4 py-2" onClick={handleKeyModal}>
                             Set Key
                         </button>
+                        <button className="bg-yellow-500 text-white rounded px-4 py-2" onClick={handleHostModal}>
+                            Set Host
+                        </button>
                     </div>
                     <div className="flex-1 p-6 overflow-y-auto">
                         <EmailDetail email={selectedEmail}/>
@@ -137,6 +159,11 @@ const EmailInterface = () => {
                     isOpen={keyModalOpen}
                     onClose={handleCloseKeyModal}
                     onSend={handleSetKey}
+                />
+                <SetHostModal
+                    isOpen={hostModalOpen}
+                    onClose={handleCloseHostModal}
+                    onSend={handleSetHost}
                 />
             </div>
         </>

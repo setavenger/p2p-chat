@@ -21,16 +21,6 @@ import (
 	"github.com/btcsuite/btcd/btcec/v2"
 )
 
-// GenerateKeyPair - generate RSA public and private keys for the client
-func GenerateKeyPair() (string, string, error) {
-	privateKey := KeyGen()
-	publicKey, err := GetPublicKey(privateKey)
-	if err != nil {
-		return "", "", err
-	}
-	return privateKey, publicKey, nil
-}
-
 // EncryptAES - encrypt plaintext using AES encryption with the generated key
 func EncryptAES(key []byte, plaintext string) ([]byte, error) {
 	block, err := aes.NewCipher(key)
