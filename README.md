@@ -3,6 +3,9 @@
 ### An encrypted alternative to exchange messages
 
 ## Setup
+
+Clone this repository.
+
 ### Generate Keys
 A simple key generation function for mac (silicon and intel) is provided in ./cli/build.
 Use the respective binary to create your keys.
