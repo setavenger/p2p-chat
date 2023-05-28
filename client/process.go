@@ -213,8 +213,14 @@ func GenerateMessage(senderPrivateKey, senderPublicKey, recipientPublicKey, mess
 }
 
 // DecryptAndVerifyMessage - verifies the signature and decrypts the message from the sender
-func DecryptAndVerifyMessage(recipientPrivateKey string, msg *common.Message) (string, error) {
+func DecryptAndVerifyMessage(ownPrivateKey string, msg *common.Message) (string, error) {
 
+	ownPublicKey, err := common.GetPublicKey(ownPrivateKey)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	// todo both directions sent/received
 	// adding 02 to signal that this is a compressed public key (33 bytes)
 	pubKeyBytes, err := hex.DecodeString("02" + msg.Sender)
 	if err != nil {
@@ -225,12 +231,22 @@ func DecryptAndVerifyMessage(recipientPrivateKey string, msg *common.Message) (s
 		return "", fmt.Errorf("Error parsing receiver public key: %s. \n", err)
 	}
 
-	// Decode the encrypted message and signature
-	decryptMessage, err := DecryptMessage(recipientPrivateKey, msg.Sender, msg.Encrypted)
-	if err != nil {
-		return "", err
+	var decryptMessage string
+	if ownPublicKey == msg.Sender {
+		// Decode the encrypted message and signature
+		decryptMessage, err = DecryptMessage(ownPrivateKey, msg.Recipient, msg.Encrypted)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		// Decode the encrypted message and signature
+		decryptMessage, err = DecryptMessage(ownPrivateKey, msg.Sender, msg.Encrypted)
+		if err != nil {
+			return "", err
+		}
 	}
 
+	//fmt.Println(decryptMessage)
 	// Verify the signature
 	// read signature
 	s, err := hex.DecodeString(msg.Signature)
@@ -269,6 +285,7 @@ func DecryptAllMessages(privateKey string, messages []common.Message) []common.M
 			Recipient:      message.Recipient,
 			Timestamp:      message.Timestamp,
 			Read:           message.Read,
+			ParentID:       message.ParentID,
 		})
 	}
 

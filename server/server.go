@@ -129,11 +129,11 @@ func (d *Daemon) MarkMessageAsRead(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-// GetUnreadMessages - Endpoint to fetch all unread messages
-func (d *Daemon) GetUnreadMessages(c *gin.Context) {
+// GetAllMessages - Endpoint to fetch all messages
+func (d *Daemon) GetAllMessages(c *gin.Context) {
 	publicKey := c.Param("public-key")
 
-	messages, err := retrieveByRecipient(d.DB, publicKey, false)
+	messages, err := retrieveAllByRecipient(d.DB, publicKey)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -142,11 +142,24 @@ func (d *Daemon) GetUnreadMessages(c *gin.Context) {
 	c.JSON(http.StatusOK, messages)
 }
 
-// GetAllMessages - Endpoint to fetch all unread messages
-func (d *Daemon) GetAllMessages(c *gin.Context) {
+// GetEveryMessage - Endpoint to fetch every message (sent/received)
+func (d *Daemon) GetEveryMessage(c *gin.Context) {
 	publicKey := c.Param("public-key")
 
-	messages, err := retrieveAllByRecipient(d.DB, publicKey)
+	messages, err := retrieveAllByPublicKey(d.DB, publicKey)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, messages)
+}
+
+// GetUnreadMessages - Endpoint to fetch all unread messages
+func (d *Daemon) GetUnreadMessages(c *gin.Context) {
+	publicKey := c.Param("public-key")
+
+	messages, err := retrieveByRecipient(d.DB, publicKey, false)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -218,6 +231,7 @@ func runServer() {
 	privateGroup.PUT("/messages/:messageid/read", daemon.MarkMessageAsRead)
 	privateGroup.PUT("/messages/:messageid/unread")
 	privateGroup.GET("/users/:public-key/messages", daemon.GetAllMessages)
+	privateGroup.GET("/users/:public-key/messages/every", daemon.GetEveryMessage)
 	privateGroup.GET("/users/:public-key/messages/read", daemon.GetReadMessages)
 	privateGroup.GET("/users/:public-key/messages/unread", daemon.GetUnreadMessages)
 

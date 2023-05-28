@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, {useState} from 'react'
 
 // ComposeModal component
-const ComposeModal = ({ isOpen, onClose, onSend, message }) => {
+const ComposeModal = ({selectedMessage, isOpen, onClose, onSend, message}) => {
     const [recipient, setRecipient] = useState('')
     const [body, setBody] = useState('')
 
     const handleSubmit = e => {
         e.preventDefault()
-        onSend({ recipient, body })
+        onSend({recipient, body})
         setRecipient("")
         setBody("")
     }
@@ -20,9 +20,9 @@ const ComposeModal = ({ isOpen, onClose, onSend, message }) => {
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
             <form className="bg-white p-8 rounded shadow-md w-1/4" onSubmit={handleSubmit}>
                 <h2 className="text-xl font-bold mb-4 w-96">Compose Reply Message</h2>
-                {/*<div className="block mb-2">*/}
-                {/*    Reply to:*/}
-                {/*</div>*/}
+                <div className="block mb-2">
+                    Reply to: {selectedMessage.sender_username}
+                </div>
                 <label className="block mb-4">
                     Message:
                     <textarea

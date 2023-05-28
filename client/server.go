@@ -14,9 +14,14 @@ type Daemon struct {
 	Client Client
 }
 
+type MetaData struct {
+	PublicKey string `json:"public_key,omitempty"`
+}
+
 type SendMessageData struct {
 	Recipient string `json:"recipient,omitempty"`
 	Body      string `json:"body,omitempty"`
+	ParentId  string `json:"parent_id,omitempty"`
 }
 
 type NewPrivateKeyBody struct {
@@ -25,6 +30,10 @@ type NewPrivateKeyBody struct {
 
 type NewHostBody struct {
 	Host string `json:"host,omitempty"`
+}
+
+func (d *Daemon) GetMetaData(c *gin.Context) {
+	c.JSON(http.StatusOK, MetaData{PublicKey: d.Client.PublicKey})
 }
 
 func (d *Daemon) SetHost(c *gin.Context) {
@@ -54,7 +63,7 @@ func (d *Daemon) SetPrivateKey(c *gin.Context) {
 }
 
 func (d *Daemon) GetMessages(c *gin.Context) {
-	messagesRaw, err := d.Client.GetAllMessages()
+	messagesRaw, err := d.Client.GetEveryMessage()
 	if err != nil {
 		fmt.Printf("Error receiving messages: %s\n", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -62,7 +71,7 @@ func (d *Daemon) GetMessages(c *gin.Context) {
 	}
 
 	messages := DecryptAllMessages(d.Client.PrivateKey, messagesRaw)
-
+	//fmt.Printf("%+v", messages)
 	c.JSON(http.StatusOK, messages)
 
 	return
@@ -90,7 +99,7 @@ func (d *Daemon) SendMessage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = SendMessageByUsername(d.Client, d.Client.PrivateKey, d.Client.PublicKey, data.Recipient, data.Body)
+	err = SendMessageByUsername(d.Client, d.Client.PrivateKey, d.Client.PublicKey, data.Recipient, data.Body, data.ParentId)
 	if err != nil {
 		fmt.Printf("Error sending message: %s\n", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -119,6 +128,8 @@ func runServer() {
 	router.POST("/send", daemon.SendMessage)
 	router.POST("/set-key", daemon.SetPrivateKey)
 	router.POST("/set-host", daemon.SetHost)
+
+	router.GET("/meta", daemon.GetMetaData)
 
 	router.GET("/messages", daemon.GetMessages)
 	router.GET("/messages/unread", daemon.GetUnreadMessages)

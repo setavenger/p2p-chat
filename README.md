@@ -19,4 +19,4 @@ $ build/p2pcli-silicon
 The frontend will be started when running `docker-compose up` in the base directory. 
 This will create the backend which communicates with the host. Furthermore, a webpage which will be the frontend 
 of the application. Accessible on `http://localhost:3000`.
-This can be changed in the docker-compose file in the base directory
+If you need to run it on a different port this can be changed in the docker-compose file in the base directory.

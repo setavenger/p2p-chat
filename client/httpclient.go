@@ -129,30 +129,6 @@ func (c *Client) ForwardMessage(message *common.Message) error {
 	return nil
 }
 
-// GetUnreadMessages fetches all unread messages
-func (c *Client) GetUnreadMessages() ([]common.Message, error) {
-	endpoint := fmt.Sprintf("/api/users/%s/messages/unread", c.PublicKey)
-
-	resp, err := c.makeRequest(http.MethodGet, endpoint, nil, nil, true)
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		fmt.Println(err)
-		return nil, fmt.Errorf("failed to fetch unread messages")
-	}
-
-	var unreadMessages []common.Message
-	if err = json.NewDecoder(resp.Body).Decode(&unreadMessages); err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	return unreadMessages, nil
-}
-
 // GetAllMessages fetches all messages
 func (c *Client) GetAllMessages() ([]common.Message, error) {
 	endpoint := fmt.Sprintf("/api/users/%s/messages", c.PublicKey)
@@ -175,6 +151,54 @@ func (c *Client) GetAllMessages() ([]common.Message, error) {
 		return nil, err
 	}
 	return messages, nil
+}
+
+// GetEveryMessage fetches all messages (sent/received)
+func (c *Client) GetEveryMessage() ([]common.Message, error) {
+	endpoint := fmt.Sprintf("/api/users/%s/messages/every", c.PublicKey)
+
+	resp, err := c.makeRequest(http.MethodGet, endpoint, nil, nil, true)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to fetch every message")
+	}
+
+	var messages []common.Message
+	if err = json.NewDecoder(resp.Body).Decode(&messages); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return messages, nil
+}
+
+// GetUnreadMessages fetches all unread messages
+func (c *Client) GetUnreadMessages() ([]common.Message, error) {
+	endpoint := fmt.Sprintf("/api/users/%s/messages/unread", c.PublicKey)
+
+	resp, err := c.makeRequest(http.MethodGet, endpoint, nil, nil, true)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println(err)
+		return nil, fmt.Errorf("failed to fetch unread messages")
+	}
+
+	var unreadMessages []common.Message
+	if err = json.NewDecoder(resp.Body).Decode(&unreadMessages); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return unreadMessages, nil
 }
 
 // GetReadMessages fetches all read messages
