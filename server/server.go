@@ -8,13 +8,16 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 )
 
 type Daemon struct {
 	DBPath string
 	DB     *gorm.DB
 	Users  map[string]*common.UserWellKnown
+	Domain string
 }
 
 func (d *Daemon) GetUserPubKey(username string) *common.UserWellKnown {
@@ -92,11 +95,18 @@ func (d *Daemon) ForwardMessage(c *gin.Context) {
 		return
 	}
 
+	// todo find local username if existent
+	userData, err := GetUsernameByPubKey(d.DB, message.Sender)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		message.SenderUsername = fmt.Sprintf("%s@%s", userData.Username, parseRawDomain(d.Domain))
+	}
 	// Forward the message to the designated server here
 	// todo
 	//
 
-	err := SaveEntry(d.DB, &message)
+	err = SaveEntry(d.DB, &message)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -107,17 +117,23 @@ func (d *Daemon) ForwardMessage(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+//todo move this
+func parseRawDomain(domainRaw string) string {
+	s := strings.ReplaceAll(domainRaw, "https://", "")
+	return strings.ReplaceAll(s, "http://", "")
+}
+
 // MarkMessageAsRead - Endpoint to mark a message as read
 func (d *Daemon) MarkMessageAsRead(c *gin.Context) {
 	// todo
 	c.Status(http.StatusOK)
 }
 
-// GetUnreadMessages - Endpoint to fetch all unread messages
-func (d *Daemon) GetUnreadMessages(c *gin.Context) {
+// GetAllMessages - Endpoint to fetch all messages
+func (d *Daemon) GetAllMessages(c *gin.Context) {
 	publicKey := c.Param("public-key")
 
-	messages, err := retrieveByRecipient(d.DB, publicKey, false)
+	messages, err := retrieveAllByRecipient(d.DB, publicKey)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -126,11 +142,24 @@ func (d *Daemon) GetUnreadMessages(c *gin.Context) {
 	c.JSON(http.StatusOK, messages)
 }
 
-// GetAllMessages - Endpoint to fetch all unread messages
-func (d *Daemon) GetAllMessages(c *gin.Context) {
+// GetEveryMessage - Endpoint to fetch every message (sent/received)
+func (d *Daemon) GetEveryMessage(c *gin.Context) {
 	publicKey := c.Param("public-key")
 
-	messages, err := retrieveAllByRecipient(d.DB, publicKey)
+	messages, err := retrieveAllByPublicKey(d.DB, publicKey)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, messages)
+}
+
+// GetUnreadMessages - Endpoint to fetch all unread messages
+func (d *Daemon) GetUnreadMessages(c *gin.Context) {
+	publicKey := c.Param("public-key")
+
+	messages, err := retrieveByRecipient(d.DB, publicKey, false)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -183,7 +212,7 @@ func runServer() {
 		fmt.Println(err)
 		return
 	}
-	daemon := Daemon{DBPath: dbPath, DB: db}
+	daemon := Daemon{DBPath: dbPath, DB: db, Domain: os.Getenv("DOMAIN")}
 	//err = daemon.LoadUsers("./data/users.json")
 	//if err != nil {
 	//	fmt.Println(err)
@@ -202,6 +231,7 @@ func runServer() {
 	privateGroup.PUT("/messages/:messageid/read", daemon.MarkMessageAsRead)
 	privateGroup.PUT("/messages/:messageid/unread")
 	privateGroup.GET("/users/:public-key/messages", daemon.GetAllMessages)
+	privateGroup.GET("/users/:public-key/messages/every", daemon.GetEveryMessage)
 	privateGroup.GET("/users/:public-key/messages/read", daemon.GetReadMessages)
 	privateGroup.GET("/users/:public-key/messages/unread", daemon.GetUnreadMessages)
 

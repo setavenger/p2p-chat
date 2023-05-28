@@ -6,7 +6,7 @@ require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
-	github.com/setavenger/p2p-chat v0.1.0
+	github.com/setavenger/p2p-chat v0.1.2
 	gorm.io/gorm v1.25.1
 )
 

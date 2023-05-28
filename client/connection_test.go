@@ -30,13 +30,13 @@ func TestSendMessage(t *testing.T) {
 	}
 
 	myMessage1 := "Hello, what is happening."
-	err = SendMessage(Client{BaseURL: "http://localhost:8000"}, privateKey, publicKey, recipientPublicKey, myMessage1)
+	err = SendMessage(Client{BaseURL: "http://localhost:8000"}, privateKey, publicKey, recipientPublicKey, myMessage1, "")
 	if err != nil {
 		t.Errorf("Error sending message: %s", err.Error())
 		return
 	}
 	myMessage2 := "This should be working. Moreover this message is going to be way longer than the other message. Let's see how big the difference is." + "This should be working. Moreover this message is going to be way longer than the other message. Let's see how big the difference is." + "This should be working. Moreover this message is going to be way longer than the other message. Let's see how big the difference is."
-	err = SendMessage(Client{BaseURL: "http://localhost:8000"}, privateKey, publicKey, recipientPublicKey, myMessage2)
+	err = SendMessage(Client{BaseURL: "http://localhost:8000"}, privateKey, publicKey, recipientPublicKey, myMessage2, "")
 	if err != nil {
 		t.Errorf("Error sending message: %s", err.Error())
 		return
@@ -54,7 +54,7 @@ func TestSendMessageByUsername(t *testing.T) {
 	username := "me@localhost:8000"
 
 	message := "Hello, what is happening."
-	err = SendMessageByUsername(Client{BaseURL: "http://localhost:8000"}, privateKey, publicKey, username, message)
+	err = SendMessageByUsername(Client{BaseURL: "http://localhost:8000"}, privateKey, publicKey, username, message, "")
 	if err != nil {
 		t.Errorf("Error sending message: %s", err.Error())
 		return
@@ -64,21 +64,22 @@ func TestSendMessageByUsername(t *testing.T) {
 // TestSendMessage - requires that server is running on Port 8000 locally
 func TestSendAndRetrieve(t *testing.T) {
 
+	baseURL := "http://localhost:8889"
 	myMessage1 := "I love it so much."
-	err := SendMessage(Client{BaseURL: "https://p2p.snblago.com"}, examplePrivateKey1, examplePublicKey1, examplePublicKey2, myMessage1)
+	err := SendMessage(Client{BaseURL: baseURL}, examplePrivateKey1, examplePublicKey1, examplePublicKey2, myMessage1, "")
 	if err != nil {
 		t.Errorf("Error sending message: %s", err.Error())
 		return
 	}
 	myMessage2 := "This should be working. Moreover this message is going to be way longer than the other message. Let's see how big the difference is."
-	err = SendMessage(Client{BaseURL: "https://p2p.snblago.com"}, examplePrivateKey3, examplePublicKey3, examplePublicKey2, myMessage2)
+	err = SendMessage(Client{BaseURL: baseURL}, examplePrivateKey3, examplePublicKey3, examplePublicKey2, myMessage2, "")
 	if err != nil {
 		t.Errorf("Error sending message: %s", err.Error())
 		return
 	}
 
 	retrieveClient := Client{
-		BaseURL:    "https://p2p.snblago.com",
+		BaseURL:    baseURL,
 		PrivateKey: examplePrivateKey2,
 		PublicKey:  examplePublicKey2,
 	}
@@ -120,13 +121,13 @@ func TestSendAndRetrieve2(t *testing.T) {
 	}
 
 	myMessage1 := "Hello!"
-	err = SendMessage(Client{BaseURL: "http://localhost:8000"}, sender1PrivateKey, sender1PublicKey, recipientPublicKey, myMessage1)
+	err = SendMessage(Client{BaseURL: "http://localhost:8000"}, sender1PrivateKey, sender1PublicKey, recipientPublicKey, myMessage1, "")
 	if err != nil {
 		t.Errorf("Error sending message: %s", err.Error())
 		return
 	}
 	myMessage2 := "This should be working. Moreover this message is going to be way longer than the other message. Let's see how big the difference is."
-	err = SendMessage(Client{BaseURL: "http://localhost:8000"}, sender2PrivateKey, sender2PublicKey, recipientPublicKey, myMessage2)
+	err = SendMessage(Client{BaseURL: "http://localhost:8000"}, sender2PrivateKey, sender2PublicKey, recipientPublicKey, myMessage2, "")
 	if err != nil {
 		t.Errorf("Error sending message: %s", err.Error())
 		return
@@ -146,6 +147,35 @@ func TestSendAndRetrieve2(t *testing.T) {
 	if len(unreadMessages) != 2 {
 		t.Errorf("not all messages were received")
 	}
+}
+
+// TestSendMessage - requires that server is running on Port 8000 locally
+func TestSendAndReply(t *testing.T) {
+
+	baseURL := "http://localhost:8889"
+	myMessage1 := "Thanks for the reply."
+	err := SendMessage(Client{BaseURL: baseURL}, examplePrivateKey1, examplePublicKey1, examplePublicKey2, myMessage1, "2d51252ec41622fd35ce2289a03a01a2a43be68b34e5e3a78dde799ab1779111")
+	if err != nil {
+		t.Errorf("Error sending message: %s", err.Error())
+		return
+	}
+	retrieveClient := Client{
+		BaseURL:    baseURL,
+		PrivateKey: examplePrivateKey2,
+		PublicKey:  examplePublicKey2,
+	}
+	unreadMessages, err := retrieveClient.GetUnreadMessages()
+	if err != nil {
+		t.Errorf("Error receiving messages: %s", err.Error())
+		return
+	}
+	myMessage2 := "Yeah, sure no worries."
+	err = SendMessage(Client{BaseURL: baseURL}, examplePrivateKey2, examplePublicKey2, examplePublicKey1, myMessage2, unreadMessages[0].ID)
+	if err != nil {
+		t.Errorf("Error sending message: %s", err.Error())
+		return
+	}
+
 }
 
 func TestRetrieveMessages(t *testing.T) {

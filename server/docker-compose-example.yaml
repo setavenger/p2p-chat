@@ -2,6 +2,8 @@ version: "3.9"
 services:
   api:
     build: .
+    environment:
+      DOMAIN: https://example.com
     ports:
       - "8889:8000"
     depends_on:
