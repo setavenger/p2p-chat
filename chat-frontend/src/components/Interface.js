@@ -8,9 +8,10 @@ import ReplyModal from "./replyModal";
 
 
 const MessageDetail = ({selectedMessage, messages}) => {
-    const renderMessage = (message, level) => {
+    const renderMessage = (message) => {
         return (
-            <div>
+            <div className={"whitespace-pre-line"}>
+                <div className={"text-gray-500 text-sm"}> From: {message.sender_username !== "" ? message.sender_username : message.sender}</div>
                 <div>{message.content}</div>
                 {message.parent_id && renderParentMessage(message.parent_id)}
             </div>
@@ -147,12 +148,16 @@ const EmailInterface = () => {
     const handleSendReply = ({recipient, body}) => {
         if (selectedMessage === null) {
             console.log("No message was selected")
-            return
+            handleCloseReplyModal()
         }
-        axios.post(baseUrl + '/send', {"recipient": selectedMessage.sender_username, "body": body, "parent_id": selectedMessage.id})
+        axios.post(baseUrl + '/send', {
+            "recipient": selectedMessage.sender_username,
+            "body": body,
+            "parent_id": selectedMessage.id
+        })
             .then(response => {
                 console.log('Email sent successfully:', response)
-                handleCloseComposeModal()
+                handleCloseReplyModal()
             })
             .catch(error => console.error('Error sending email:', error))
     }
