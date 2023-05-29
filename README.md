@@ -23,6 +23,7 @@ of the application. Accessible on `http://localhost:3000`.
 If you need to run it on a different port this can be changed in the docker-compose file in the base directory.
 
 ### Server
+Change directory to the server subdirectory.
 Copy the `docker-compose-example.yaml` to a `docker-compose.yaml`.
 To run the server you have to define the domain on which the server runs in the `docker-compose.yaml`. 
 Change the password (`POSTGRES_PASSWORD`) and then run the docker-compose file `docker-compose up -d`.
