@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -57,7 +59,12 @@ func GetPublicKeyForUsername(username string) (*UserWellKnown, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println(err)
+		_, err = io.Copy(os.Stdout, resp.Body)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return nil, err
+		}
+
 		return nil, fmt.Errorf("failed to fetch user data")
 	}
 

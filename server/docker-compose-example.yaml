@@ -4,7 +4,7 @@ services:
     build: .
     environment:
       DB_PASSWORD: <YOUR_PASSWORD>
-      DOMAIN: https://example.com
+      DOMAIN: https://example.com || http://localhost:8889
     ports:
       - "127.0.0.1:8889:8000"
     depends_on:
