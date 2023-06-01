@@ -119,7 +119,7 @@ func runServer() {
 
 	router := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"}                            // Add the allowed origins
+	config.AllowOrigins = []string{"http://localhost:3000", "http://localhost:3001"}   // Add the allowed origins
 	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"} // Add the allowed HTTP methods
 	config.AllowHeaders = []string{"Origin", "Content-Type", "Authorization"}          // Add the allowed headers
 	router.Use(cors.New(config))

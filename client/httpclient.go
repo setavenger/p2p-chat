@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/setavenger/p2p-chat/common"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 )
 
@@ -165,7 +167,12 @@ func (c *Client) GetEveryMessage() ([]common.Message, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println(err)
+		_, err = io.Copy(os.Stdout, resp.Body)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return nil, err
+		}
+
 		return nil, fmt.Errorf("failed to fetch every message")
 	}
 

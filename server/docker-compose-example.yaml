@@ -3,9 +3,10 @@ services:
   api:
     build: .
     environment:
+      DB_PASSWORD: <YOUR_PASSWORD>
       DOMAIN: https://example.com
     ports:
-      - "8889:8000"
+      - "127.0.0.1:8889:8000"
     depends_on:
       - db
     networks:
@@ -16,7 +17,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: main
-      POSTGRES_PASSWORD: .znb6PF_yHWzCtbF6sYfNC_3CB!yoq
+      POSTGRES_PASSWORD: <YOUR_PASSWORD>
       POSTGRES_DB: p2p
     volumes:
       - db-data:/var/lib/postgresql/data

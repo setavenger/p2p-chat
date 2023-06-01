@@ -7,6 +7,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
+	"os"
 )
 
 type NonceCounter struct {
@@ -19,7 +20,7 @@ func ConnectToPostgres() (db *gorm.DB, err error) {
 	port := 5432 // Default PostgreSQL port
 	user := "main"
 	dbname := "p2p"
-	password := ".znb6PF_yHWzCtbF6sYfNC_3CB!yoq"
+	password := os.Getenv("DB_PASSWORD")
 	sslmode := "disable" // or "require" if SSL is enabled
 
 	// Create connection string
